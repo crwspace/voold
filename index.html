@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CROW — Kalkulator HPP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE6;
+    --border: #E2DDD4;
+    --border2: #C8C2B6;
+    --text: #1A1814;
+    --text2: #6B6560;
+    --text3: #9E9890;
+    --accent: #1A1814;
+    --accent-light: #F0EDE6;
+    --green: #2D6A4F;
+    --green-bg: #D8F3DC;
+    --amber: #92400E;
+    --amber-bg: #FEF3C7;
+    --red: #991B1B;
+    --red-bg: #FEE2E2;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+  .header-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255,255,255,0.25);
+  }
+  .header-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+  .header-right {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 1.25rem;
+  }
+
+  /* PRODUCT NAME */
+  .product-input {
+    width: 100%;
+    height: 48px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .product-input:focus { border-color: var(--accent); }
+  .product-input::placeholder { color: var(--text3); font-weight: 500; }
+
+  /* INGREDIENT TABLE */
+  .ing-header {
+    display: grid;
+    grid-template-columns: 2fr 90px 95px 130px 36px;
+    gap: 8px;
+    padding: 0 0 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .ing-header span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .ing-row {
+    display: grid;
+    grid-template-columns: 2fr 90px 95px 130px 36px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    animation: fadeIn 0.15s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+
+  .ing-row input,
+  .ing-row select {
+    width: 100%;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface);
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  .ing-row input:focus,
+  .ing-row select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .ing-row input::placeholder { color: var(--text3); }
+  .ing-row select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9890' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 26px;
+    cursor: pointer;
+  }
+  .ing-cost {
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 500;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .del-btn {
+    width: 36px;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .del-btn:hover { background: var(--red-bg); border-color: #FCA5A5; color: var(--red); }
+  .del-btn svg { width: 15px; height: 15px; }
+
+  .add-btn {
+    width: 100%;
+    height: 40px;
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    transition: all 0.15s;
+  }
+  .add-btn:hover { background: var(--surface2); border-style: solid; color: var(--text); }
+
+  /* OVERHEAD SLIDER */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .slider-row input[type=range] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--surface);
+    box-shadow: 0 0 0 2px var(--border2);
+  }
+  .slider-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    min-width: 52px;
+    text-align: right;
+    color: var(--text);
+  }
+  .overhead-note { font-size: 11px; color: var(--text3); margin-top: 8px; }
+
+  /* SUMMARY METRICS */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .metric {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .metric-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .metric-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .metric-value.big { font-size: 26px; color: var(--accent); }
+  .metric-note { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* PRICE TIERS */
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .tier-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface);
+    position: relative;
+  }
+  .tier-card:hover { border-color: var(--border2); }
+  .tier-card.active {
+    border-color: var(--accent);
+    border-width: 2px;
+    background: #FAFAF9;
+  }
+  .tier-card.active::after {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  .tier-type { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .tier-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .tier-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-red { background: var(--red-bg); color: var(--red); }
+  .tier-mult { font-size: 11px; color: var(--text3); margin-top: 6px; }
+
+  /* BREAKDOWN TABLE */
+  .breakdown-table { width: 100%; border-collapse: collapse; }
+  .breakdown-table tr { border-bottom: 1px solid var(--border); }
+  .breakdown-table tr:last-child { border-bottom: none; }
+  .breakdown-table td { padding: 10px 4px; font-size: 13px; }
+  .breakdown-table td:last-child { text-align: right; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+  .breakdown-table .td-label { color: var(--text2); }
+  .breakdown-table .tr-total td { font-size: 15px; color: var(--text); border-top: 2px solid var(--border2); }
+  .breakdown-table .tr-profit td { color: var(--green); }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text3);
+  }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+  .empty p { font-size: 13px; }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .container { padding: 1.25rem 1rem 3rem; }
+    .ing-header { display: none; }
+    .ing-row {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+    }
+    .ing-row input:first-child { grid-column: 1 / -1; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .tiers-grid { grid-template-columns: 1fr; }
+    .header-right { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">CROW</div>
+    <div class="header-divider"></div>
+    <div class="header-sub">Kalkulator HPP Coffeeshop</div>
+  </div>
+  <div class="header-right">v1.0</div>
+</header>
+
+<div class="container">
+
+  <!-- NAMA PRODUK -->
+  <div class="card">
+    <div class="card-title">Nama produk</div>
+    <input type="text" class="product-input" id="productName" placeholder="Cappuccino, Es Kopi Susu, Matcha Latte..." oninput="recalc()">
+  </div>
+
+  <!-- BAHAN -->
+  <div class="card">
+    <div class="card-title">Bahan-bahan</div>
+    <div class="ing-header">
+      <span>Nama bahan</span>
+      <span>Jumlah</span>
+      <span>Satuan</span>
+      <span>Harga / kg atau L</span>
+      <span></span>
+    </div>
+    <div id="ingList"></div>
+    <button class="add-btn" onclick="addRow()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+      Tambah bahan
+    </button>
+  </div>
+
+  <!-- OVERHEAD -->
+  <div class="card">
+    <div class="card-title">Biaya overhead & operasional</div>
+    <div class="slider-row">
+      <div style="flex:1">
+        <input type="range" min="5" max="60" value="20" step="1" id="ohSlider" oninput="syncSlider();recalc()">
+      </div>
+      <div class="slider-val"><span id="ohVal">20</span>%</div>
+    </div>
+    <div class="overhead-note">Mencakup: listrik, gas, air, kemasan cup & sedotan, tenaga kerja, sewa tempat, dll.</div>
+  </div>
+
+  <!-- HASIL -->
+  <div id="resultSection" class="hidden">
+
+    <!-- METRICS -->
+    <div class="card">
+      <div class="card-title">Ringkasan HPP</div>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-label">HPP Bahan</div>
+          <div class="metric-value" id="mBahan">Rp 0</div>
+          <div class="metric-note">total semua bahan</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Overhead</div>
+          <div class="metric-value" id="mOverhead">Rp 0</div>
+          <div class="metric-note" id="mOhNote">+20% dari bahan</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">HPP Final</div>
+          <div class="metric-value big" id="mFinal">Rp 0</div>
+          <div class="metric-note">modal per 1 porsi</div>
+        </div>
+      </div>
+
+      <!-- BREAKDOWN per bahan -->
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Detail per bahan</div>
+        <table class="breakdown-table" id="detailTable"></table>
+      </div>
+    </div>
+
+    <!-- SARAN HARGA JUAL -->
+    <div class="card">
+      <div class="card-title">Saran harga jual</div>
+      <div class="tiers-grid" id="tiersGrid"></div>
+
+      <!-- KALKULASI AKHIR -->
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <table class="breakdown-table" id="finalTable"></table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div id="emptyState" class="card">
+    <div class="empty">
+      <div class="empty-icon">☕</div>
+      <p>Isi nama bahan, jumlah, dan harga di atas<br>untuk melihat kalkulasi HPP.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let rows = [];
+  let selectedTier = 1;
+
+  function fmt(n) {
+    return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+  }
+
+  function syncSlider() {
+    document.getElementById('ohVal').textContent = document.getElementById('ohSlider').value;
+  }
+
+  function unitLabel(unit) {
+    const map = { gram:'g', ml:'ml', buah:'bh', sdm:'sdm', sachet:'scht' };
+    return map[unit] || unit;
+  }
+
+  function calcCost(r) {
+    const qty = parseFloat(r.qty) || 0;
+    const price = parseFloat(r.price) || 0;
+    const unit = r.unit;
+    if (unit === 'gram') return (qty / 1000) * price;
+    if (unit === 'ml') return (qty / 1000) * price;
+    if (unit === 'buah') return qty * price;
+    if (unit === 'sdm') return (qty * 15 / 1000) * price;
+    if (unit === 'sachet') return qty * price;
+    return 0;
+  }
+
+  function addRow(name='', qty='', unit='gram', price='') {
+    const id = Date.now() + Math.random();
+    rows.push({ id, name, qty, unit, price });
+    renderRows();
+  }
+
+  function delRow(id) {
+    rows = rows.filter(r => r.id !== id);
+    renderRows();
+    recalc();
+  }
+
+  function updateRow(id, field, val) {
+    const r = rows.find(x => x.id === id);
+    if (r) { r[field] = val; recalc(); }
+  }
+
+  function renderRows() {
+    const el = document.getElementById('ingList');
+    el.innerHTML = '';
+    rows.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'ing-row';
+      div.innerHTML = `
+        <input type="text" placeholder="misal: Espresso, Susu, Gula..." value="${r.name}"
+          oninput="updateRow(${r.id},'name',this.value)">
+        <input type="number" placeholder="50" value="${r.qty}" min="0" step="0.1"
+          oninput="updateRow(${r.id},'qty',this.value)">
+        <select onchange="updateRow(${r.id},'unit',this.value)">
+          <option value="gram" ${r.unit==='gram'?'selected':''}>gram</option>
+          <option value="ml" ${r.unit==='ml'?'selected':''}>ml</option>
+          <option value="buah" ${r.unit==='buah'?'selected':''}>buah</option>
+          <option value="sdm" ${r.unit==='sdm'?'selected':''}>sdm</option>
+          <option value="sachet" ${r.unit==='sachet'?'selected':''}>sachet</option>
+        </select>
+        <input type="number" placeholder="Harga per kg / L / buah" value="${r.price}" min="0"
+          oninput="updateRow(${r.id},'price',this.value)">
+        <button class="del-btn" onclick="delRow(${r.id})" title="Hapus bahan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+          </svg>
+        </button>
+      `;
+      el.appendChild(div);
+    });
+    recalc();
+  }
+
+  function recalc() {
+    const hasData = rows.some(r => r.name && parseFloat(r.qty) > 0 && parseFloat(r.price) > 0);
+    document.getElementById('resultSection').classList.toggle('hidden', !hasData);
+    document.getElementById('emptyState').classList.toggle('hidden', hasData);
+    if (!hasData) return;
+
+    const bahan = rows.reduce((s, r) => s + calcCost(r), 0);
+    const ohPct = (parseInt(document.getElementById('ohSlider').value) || 20) / 100;
+    const overhead = bahan * ohPct;
+    const hpp = bahan + overhead;
+
+    document.getElementById('mBahan').textContent = fmt(bahan);
+    document.getElementById('mOverhead').textContent = fmt(overhead);
+    document.getElementById('mOhNote').textContent = `+${Math.round(ohPct*100)}% dari bahan`;
+    document.getElementById('mFinal').textContent = fmt(hpp);
+
+    // Detail per bahan
+    const dt = document.getElementById('detailTable');
+    dt.innerHTML = rows.filter(r => r.name && parseFloat(r.qty) > 0 && parseFloat(r.price) > 0).map(r => {
+      const cost = calcCost(r);
+      const pct = bahan > 0 ? Math.round(cost / bahan * 100) : 0;
+      return `<tr>
+        <td class="td-label">${r.name || '—'}</td>
+        <td style="color:var(--text3);font-size:12px">${r.qty} ${unitLabel(r.unit)}</td>
+        <td>${fmt(cost)} <span style="color:var(--text3);font-size:11px;font-weight:400">(${pct}%)</span></td>
+      </tr>`;
+    }).join('') + `<tr class="tr-total"><td class="td-label" colspan="2">Total bahan</td><td>${fmt(bahan)}</td></tr>`;
+
+    // Tiers
+    const tiers = [
+      { label: 'Hemat', mult: 1.5, desc: '1.5× HPP' },
+      { label: 'Standar', mult: 2.0, desc: '2× HPP — paling umum' },
+      { label: 'Premium', mult: 2.5, desc: '2.5× HPP' },
+    ];
+    const tg = document.getElementById('tiersGrid');
+    tg.innerHTML = '';
+    tiers.forEach((t, i) => {
+      const price = Math.ceil(hpp * t.mult / 1000) * 1000;
+      const margin = Math.round((price - hpp) / price * 100);
+      const bc = margin >= 50 ? 'badge-green' : margin >= 33 ? 'badge-amber' : 'badge-red';
+      const div = document.createElement('div');
+      div.className = 'tier-card' + (selectedTier === i ? ' active' : '');
+      div.innerHTML = `
+        <div class="tier-type">${t.label}</div>
+        <div class="tier-price">${fmt(price)}</div>
+        <div><span class="tier-badge ${bc}">Margin ${margin}%</span></div>
+        <div class="tier-mult">${t.desc}</div>
+      `;
+      div.onclick = () => { selectedTier = i; recalc(); };
+      tg.appendChild(div);
+    });
+
+    // Final breakdown
+    const chosen = Math.ceil(hpp * tiers[selectedTier].mult / 1000) * 1000;
+    const profit = chosen - hpp;
+    const marginPct = Math.round(profit / chosen * 100);
+    const mc = marginPct >= 50 ? 'var(--green)' : marginPct >= 33 ? 'var(--amber)' : 'var(--red)';
+    const marginLabel = marginPct >= 50 ? '✓ Margin sehat' : marginPct >= 33 ? '⚠ Margin cukup' : '✗ Perlu review';
+
+    document.getElementById('finalTable').innerHTML = `
+      <tr><td class="td-label">HPP final (bahan + overhead)</td><td>${fmt(hpp)}</td></tr>
+      <tr><td class="td-label">Harga jual dipilih</td><td style="font-size:16px">${fmt(chosen)}</td></tr>
+      <tr class="tr-profit"><td class="td-label" style="color:var(--green)">Keuntungan per porsi</td><td style="color:var(--green)">${fmt(profit)}</td></tr>
+      <tr><td class="td-label">Margin keuntungan</td><td style="color:${mc}">${marginPct}% — ${marginLabel}</td></tr>
+    `;
+  }
+
+  // Default example data
+  addRow('Espresso', '18', 'gram', '80000');
+  addRow('Susu full cream', '150', 'ml', '22000');
+  addRow('Gula pasir', '15', 'gram', '16000');
+  recalc();
+</script>
+</body>
+</html>
