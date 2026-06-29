@@ -3,636 +3,947 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CROW — Kalkulator HPP</title>
+<title>voold — member system</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root {
+  --red: #E61717;
+  --red-dark: #b81212;
+  --red-light: #fce8e8;
+  --white: #FAFAFA;
+  --gray-text: #555;
+  --gray-muted: #999;
+  --border: #e5e5e5;
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--white); font-family: 'Segoe UI', system-ui, sans-serif; color: #1a1a1a; min-height: 100vh; }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* NAVBAR */
+.navbar-voold {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { font-size: 1.55rem; font-weight: 800; color: var(--red); letter-spacing: -1px; }
+.logo span { color: #1a1a1a; font-weight: 300; }
+.nav-links { display: flex; gap: 0.3rem; }
+.nav-links button {
+  background: none; border: none; font-size: 0.83rem; color: var(--gray-text);
+  cursor: pointer; padding: 0.4rem 0.85rem; border-radius: 8px; transition: all 0.15s; font-weight: 500;
+}
+.nav-links button:hover { background: var(--red-light); color: var(--red); }
+.nav-links button.active { background: var(--red); color: #fff; }
 
-  :root {
-    --bg: #F7F5F0;
-    --surface: #FFFFFF;
-    --surface2: #F0EDE6;
-    --border: #E2DDD4;
-    --border2: #C8C2B6;
-    --text: #1A1814;
-    --text2: #6B6560;
-    --text3: #9E9890;
-    --accent: #1A1814;
-    --accent-light: #F0EDE6;
-    --green: #2D6A4F;
-    --green-bg: #D8F3DC;
-    --amber: #92400E;
-    --amber-bg: #FEF3C7;
-    --red: #991B1B;
-    --red-bg: #FEE2E2;
-    --radius: 10px;
-    --radius-sm: 6px;
-  }
+/* MAIN */
+.main-wrap { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.6;
-  }
+/* STAT CARDS */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-bottom: 2rem; }
+.stat-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.3rem; }
+.stat-label { font-size: 0.72rem; color: var(--gray-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+.stat-value { font-size: 1.7rem; font-weight: 700; color: #1a1a1a; line-height: 1; }
+.stat-value.red { color: var(--red); }
 
-  /* HEADER */
-  .header {
-    background: var(--accent);
-    color: #fff;
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .header-logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #fff;
-  }
-  .header-divider {
-    width: 1px;
-    height: 18px;
-    background: rgba(255,255,255,0.25);
-  }
-  .header-sub {
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 400;
-  }
-  .header-right {
-    font-size: 11px;
-    color: rgba(255,255,255,0.4);
-  }
+/* SECTION TITLE */
+.section-title {
+  font-size: 0.95rem; font-weight: 600; color: #1a1a1a; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* LAYOUT */
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
+/* FORM CARD */
+.form-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.4rem; margin-bottom: 2rem;
+}
+.form-card label { font-size: 0.78rem; font-weight: 600; color: var(--gray-text); margin-bottom: 0.3rem; display: block; }
+.form-card input, .form-card select, .form-card textarea {
+  width: 100%; border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.6rem 0.9rem; font-size: 0.875rem; color: #1a1a1a;
+  background: var(--white); outline: none; transition: border 0.15s;
+  font-family: inherit;
+}
+.form-card input:focus, .form-card select:focus { border-color: var(--red); }
 
-  /* CARDS */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .card-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 1.25rem;
-  }
+/* AUTOCOMPLETE */
+.autocomplete-wrap { position: relative; }
+.autocomplete-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50; display: none; max-height: 220px; overflow-y: auto;
+}
+.autocomplete-dropdown.show { display: block; }
+.ac-item {
+  padding: 0.65rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.7rem;
+  border-bottom: 1px solid #f3f3f3; transition: background 0.1s;
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover { background: var(--red-light); }
+.ac-avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--red); color: #fff;
+  font-weight: 700; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ac-info .ac-name { font-size: 0.875rem; font-weight: 600; color: #1a1a1a; }
+.ac-info .ac-sub { font-size: 0.75rem; color: var(--gray-muted); }
+.ac-badge { margin-left: auto; background: var(--red-light); color: var(--red); font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 20px; }
+.selected-member-card {
+  background: var(--red-light); border-radius: 8px; padding: 0.6rem 0.9rem;
+  display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;
+}
+.selected-member-card .sm-name { font-weight: 700; font-size: 0.875rem; color: var(--red); }
+.selected-member-card .sm-pt { font-size: 0.78rem; color: #c00; }
+.selected-member-card .sm-clear { background: none; border: none; cursor: pointer; color: var(--red); font-size: 1rem; line-height: 1; padding: 0; }
 
-  /* PRODUCT NAME */
-  .product-input {
-    width: 100%;
-    height: 48px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--text);
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 8px;
-    transition: border-color 0.2s;
-  }
-  .product-input:focus { border-color: var(--accent); }
-  .product-input::placeholder { color: var(--text3); font-weight: 500; }
+/* BTN */
+.btn-red {
+  background: var(--red); color: #fff; border: none; border-radius: 8px;
+  padding: 0.65rem 1.4rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.15s;
+}
+.btn-red:hover { background: var(--red-dark); }
+.btn-outline {
+  background: none; color: var(--red); border: 1px solid var(--red); border-radius: 8px;
+  padding: 0.65rem 1.4rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.btn-outline:hover { background: var(--red-light); }
+.btn-ghost {
+  background: none; border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.6rem 1.2rem; font-size: 0.875rem; cursor: pointer; color: var(--gray-text); transition: all 0.12s;
+}
+.btn-ghost:hover { border-color: #ccc; }
 
-  /* INGREDIENT TABLE */
-  .ing-header {
-    display: grid;
-    grid-template-columns: 2fr 90px 95px 130px 36px;
-    gap: 8px;
-    padding: 0 0 8px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 10px;
-  }
-  .ing-header span {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .ing-row {
-    display: grid;
-    grid-template-columns: 2fr 90px 95px 130px 36px;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-    animation: fadeIn 0.15s ease;
-  }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+/* TABLE WRAP */
+.table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.search-bar { padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.7rem; }
+.search-bar input {
+  border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.9rem;
+  font-size: 0.875rem; outline: none; flex: 1; max-width: 280px; background: var(--white);
+}
+.search-bar input:focus { border-color: var(--red); }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #f7f7f7; border-bottom: 1px solid var(--border); }
+th { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-muted); padding: 0.65rem 1rem; text-align: left; }
+td { padding: 0.8rem 1rem; font-size: 0.85rem; color: #1a1a1a; border-bottom: 1px solid #f3f3f3; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fdfdfd; }
 
-  .ing-row input,
-  .ing-row select {
-    width: 100%;
-    height: 38px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 0 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    background: var(--surface);
-    transition: border-color 0.15s;
-    -webkit-appearance: none;
-  }
-  .ing-row input:focus,
-  .ing-row select:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-  .ing-row input::placeholder { color: var(--text3); }
-  .ing-row select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9890' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    padding-right: 26px;
-    cursor: pointer;
-  }
-  .ing-cost {
-    font-size: 12px;
-    color: var(--text2);
-    font-weight: 500;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.badge-point {
+  background: var(--red-light); color: var(--red); font-weight: 700;
+  font-size: 0.75rem; padding: 0.22rem 0.55rem; border-radius: 20px; display: inline-block; white-space: nowrap;
+}
+.badge-redeemed {
+  background: #fff3e0; color: #e65100; font-weight: 700;
+  font-size: 0.75rem; padding: 0.22rem 0.55rem; border-radius: 20px; display: inline-block; white-space: nowrap;
+}
+.badge-remain {
+  background: #e8f5e9; color: #2e7d32; font-weight: 700;
+  font-size: 0.75rem; padding: 0.22rem 0.55rem; border-radius: 20px; display: inline-block; white-space: nowrap;
+}
+.member-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--red); color: #fff;
+  font-weight: 700; font-size: 0.72rem; display: inline-flex; align-items: center; justify-content: center;
+  margin-right: 0.6rem; flex-shrink: 0;
+}
+.member-name-cell { display: flex; align-items: center; }
+.member-name { font-weight: 600; }
+.member-phone { font-size: 0.75rem; color: var(--gray-muted); }
+.action-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.28rem 0.6rem; font-size: 0.75rem; cursor: pointer; color: var(--gray-text);
+  transition: all 0.12s; margin-right: 3px; white-space: nowrap;
+}
+.action-btn:hover { border-color: var(--red); color: var(--red); }
+.action-btn.danger { color: var(--red); border-color: #fcc; }
+.action-btn.danger:hover { background: var(--red-light); }
 
-  .del-btn {
-    width: 36px;
-    height: 38px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text3);
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-  .del-btn:hover { background: var(--red-bg); border-color: #FCA5A5; color: var(--red); }
-  .del-btn svg { width: 15px; height: 15px; }
+/* POINT PREVIEW BOX */
+.point-preview {
+  background: var(--red-light); border-radius: 10px; padding: 0.9rem 1rem;
+  display: flex; align-items: center; justify-content: space-between; margin-top: 0.8rem;
+}
+.point-preview .label { font-size: 0.78rem; color: #b00; }
+.point-preview .sublabel { font-size: 0.72rem; color: #c44; margin-top: 2px; }
+.point-preview .val { font-size: 1.4rem; font-weight: 800; color: var(--red); }
 
-  .add-btn {
-    width: 100%;
-    height: 40px;
-    border: 1.5px dashed var(--border2);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--text2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 12px;
-    transition: all 0.15s;
-  }
-  .add-btn:hover { background: var(--surface2); border-style: solid; color: var(--text); }
+/* TRANS ITEMS */
+.trans-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.85rem 1.2rem; border-bottom: 1px solid #f3f3f3;
+}
+.trans-item:last-child { border-bottom: none; }
+.trans-left { display: flex; flex-direction: column; gap: 2px; }
+.trans-name { font-weight: 600; font-size: 0.875rem; }
+.trans-time { font-size: 0.72rem; color: var(--gray-muted); }
+.trans-right { text-align: right; }
+.trans-amount { font-weight: 700; font-size: 0.875rem; }
+.trans-point { font-size: 0.75rem; font-weight: 600; }
+.trans-point.earn { color: var(--red); }
+.trans-point.redeem { color: #e65100; }
+.trans-tag {
+  font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 10px; margin-left: 0.4rem;
+  vertical-align: middle;
+}
+.trans-tag.earn-tag { background: var(--red-light); color: var(--red); }
+.trans-tag.redeem-tag { background: #fff3e0; color: #e65100; }
 
-  /* OVERHEAD SLIDER */
-  .slider-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .slider-row input[type=range] {
-    flex: 1;
-    height: 4px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  .slider-row input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    border: 2px solid var(--surface);
-    box-shadow: 0 0 0 2px var(--border2);
-  }
-  .slider-val {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    min-width: 52px;
-    text-align: right;
-    color: var(--text);
-  }
-  .overhead-note { font-size: 11px; color: var(--text3); margin-top: 8px; }
+/* EMPTY STATE */
+.empty-state { padding: 2.5rem; text-align: center; color: var(--gray-muted); }
+.empty-icon { font-size: 2.2rem; margin-bottom: 0.6rem; opacity: 0.35; }
+.empty-state p { font-size: 0.85rem; }
 
-  /* SUMMARY METRICS */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 1.25rem;
-  }
-  .metric {
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-  }
-  .metric-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .metric-value {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .metric-value.big { font-size: 26px; color: var(--accent); }
-  .metric-note { font-size: 11px; color: var(--text3); margin-top: 4px; }
+/* TOAST */
+.toast-wrap { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; }
+.toast-msg {
+  background: #1a1a1a; color: #fff; padding: 0.7rem 1.1rem; border-radius: 10px;
+  font-size: 0.85rem; font-weight: 500; animation: slideUp 0.22s ease;
+  display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.toast-msg.success::before { content: '✓'; color: #4ade80; font-weight: 700; }
+.toast-msg.error::before { content: '✕'; color: #f87171; font-weight: 700; }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  /* PRICE TIERS */
-  .tiers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 1.25rem;
-  }
-  .tier-card {
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: var(--surface);
-    position: relative;
-  }
-  .tier-card:hover { border-color: var(--border2); }
-  .tier-card.active {
-    border-color: var(--accent);
-    border-width: 2px;
-    background: #FAFAF9;
-  }
-  .tier-card.active::after {
-    content: '✓';
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 20px;
-    height: 20px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 50%;
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-  }
-  .tier-type { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-  .tier-price {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .tier-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .badge-green { background: var(--green-bg); color: var(--green); }
-  .badge-amber { background: var(--amber-bg); color: var(--amber); }
-  .badge-red { background: var(--red-bg); color: var(--red); }
-  .tier-mult { font-size: 11px; color: var(--text3); margin-top: 6px; }
+/* MODAL */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.38); z-index: 200; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #fff; border-radius: var(--radius); padding: 1.7rem;
+  width: 100%; max-width: 460px; margin: 1rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.14);
+}
+.modal-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; }
+.modal-subtitle { font-size: 0.8rem; color: var(--gray-muted); margin-bottom: 1.2rem; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 0.7rem; margin-top: 1.4rem; }
 
-  /* BREAKDOWN TABLE */
-  .breakdown-table { width: 100%; border-collapse: collapse; }
-  .breakdown-table tr { border-bottom: 1px solid var(--border); }
-  .breakdown-table tr:last-child { border-bottom: none; }
-  .breakdown-table td { padding: 10px 4px; font-size: 13px; }
-  .breakdown-table td:last-child { text-align: right; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
-  .breakdown-table .td-label { color: var(--text2); }
-  .breakdown-table .tr-total td { font-size: 15px; color: var(--text); border-top: 2px solid var(--border2); }
-  .breakdown-table .tr-profit td { color: var(--green); }
+/* REDEEM SECTION IN MODAL */
+.redeem-info {
+  background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px;
+  padding: 0.9rem 1rem; margin-bottom: 1rem;
+}
+.redeem-info .ri-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+.redeem-info .ri-row:last-child { margin-bottom: 0; }
+.redeem-info .ri-label { font-size: 0.78rem; color: #795548; }
+.redeem-info .ri-val { font-size: 0.875rem; font-weight: 700; color: #4a3000; }
+.ri-remain { color: #2e7d32 !important; }
 
-  /* EMPTY STATE */
-  .empty {
-    text-align: center;
-    padding: 2.5rem 1rem;
-    color: var(--text3);
-  }
-  .empty-icon { font-size: 32px; margin-bottom: 10px; }
-  .empty p { font-size: 13px; }
+/* POINT BREAKDOWN */
+.point-breakdown {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-top: 0.4rem;
+}
+.pb-item { background: #f9f9f9; border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; }
+.pb-label { font-size: 0.68rem; color: var(--gray-muted); margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.pb-val { font-size: 1rem; font-weight: 700; }
+.pb-val.earned { color: var(--red); }
+.pb-val.redeemed { color: #e65100; }
+.pb-val.remain { color: #2e7d32; }
 
-  /* HIDDEN */
-  .hidden { display: none !important; }
+/* RIWAYAT TUKAR POINT TABLE */
+.sub-tag { font-size: 0.68rem; background: #fff3e0; color: #e65100; padding: 0.15rem 0.45rem; border-radius: 20px; font-weight: 700; }
 
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .container { padding: 1.25rem 1rem 3rem; }
-    .ing-header { display: none; }
-    .ing-row {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
-    }
-    .ing-row input:first-child { grid-column: 1 / -1; }
-    .metrics-grid { grid-template-columns: 1fr 1fr; }
-    .tiers-grid { grid-template-columns: 1fr; }
-    .header-right { display: none; }
-  }
+@media (max-width: 640px) {
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .navbar-voold { padding: 0.9rem 1rem; }
+  .main-wrap { padding: 1.2rem 1rem; }
+  .nav-links button { font-size: 0.78rem; padding: 0.4rem 0.6rem; margin-left: 0; }
+  .point-breakdown { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-brand">
-    <div class="header-logo">CROW</div>
-    <div class="header-divider"></div>
-    <div class="header-sub">Kalkulator HPP Coffeeshop</div>
+<nav class="navbar-voold">
+  <div class="logo">voold</div>
+  <div class="nav-links">
+    <button class="active" data-tab="dashboard">Dashboard</button>
+    <button data-tab="member">Member</button>
+    <button data-tab="transaksi">Transaksi</button>
+    <button data-tab="tukarpoint">Tukar Point</button>
   </div>
-  <div class="header-right">v1.0</div>
-</header>
+</nav>
 
-<div class="container">
+<div class="main-wrap">
 
-  <!-- NAMA PRODUK -->
-  <div class="card">
-    <div class="card-title">Nama produk</div>
-    <input type="text" class="product-input" id="productName" placeholder="Cappuccino, Es Kopi Susu, Matcha Latte..." oninput="recalc()">
-  </div>
-
-  <!-- BAHAN -->
-  <div class="card">
-    <div class="card-title">Bahan-bahan</div>
-    <div class="ing-header">
-      <span>Nama bahan</span>
-      <span>Jumlah</span>
-      <span>Satuan</span>
-      <span>Harga / kg atau L</span>
-      <span></span>
-    </div>
-    <div id="ingList"></div>
-    <button class="add-btn" onclick="addRow()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
-      Tambah bahan
-    </button>
-  </div>
-
-  <!-- OVERHEAD -->
-  <div class="card">
-    <div class="card-title">Biaya overhead & operasional</div>
-    <div class="slider-row">
-      <div style="flex:1">
-        <input type="range" min="5" max="60" value="20" step="1" id="ohSlider" oninput="syncSlider();recalc()">
+  <!-- ══════════ DASHBOARD ══════════ -->
+  <div class="tab-panel active" id="tab-dashboard">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">total member</div>
+        <div class="stat-value red" id="stat-total">0</div>
       </div>
-      <div class="slider-val"><span id="ohVal">20</span>%</div>
+      <div class="stat-card">
+        <div class="stat-label">total transaksi</div>
+        <div class="stat-value" id="stat-trx">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">total point diberikan</div>
+        <div class="stat-value" id="stat-points-given">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">total point ditukar</div>
+        <div class="stat-value" id="stat-points-redeemed">0</div>
+      </div>
     </div>
-    <div class="overhead-note">Mencakup: listrik, gas, air, kemasan cup & sedotan, tenaga kerja, sewa tempat, dll.</div>
+
+    <div class="section-title">aktivitas terbaru</div>
+    <div class="table-wrap">
+      <div id="recent-list">
+        <div class="empty-state"><div class="empty-icon">☕</div><p>belum ada aktivitas</p></div>
+      </div>
+    </div>
   </div>
 
-  <!-- HASIL -->
-  <div id="resultSection" class="hidden">
-
-    <!-- METRICS -->
-    <div class="card">
-      <div class="card-title">Ringkasan HPP</div>
-      <div class="metrics-grid">
-        <div class="metric">
-          <div class="metric-label">HPP Bahan</div>
-          <div class="metric-value" id="mBahan">Rp 0</div>
-          <div class="metric-note">total semua bahan</div>
+  <!-- ══════════ MEMBER ══════════ -->
+  <div class="tab-panel" id="tab-member">
+    <div class="section-title">daftarkan member baru</div>
+    <div class="form-card">
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label>nama lengkap *</label>
+          <input type="text" id="inp-name" placeholder="contoh: Andi Pratama">
         </div>
-        <div class="metric">
-          <div class="metric-label">Overhead</div>
-          <div class="metric-value" id="mOverhead">Rp 0</div>
-          <div class="metric-note" id="mOhNote">+20% dari bahan</div>
+        <div class="col-sm-6">
+          <label>no. telepon *</label>
+          <input type="tel" id="inp-phone" placeholder="contoh: 08123456789">
         </div>
-        <div class="metric">
-          <div class="metric-label">HPP Final</div>
-          <div class="metric-value big" id="mFinal">Rp 0</div>
-          <div class="metric-note">modal per 1 porsi</div>
+        <div class="col-sm-6">
+          <label>email (opsional)</label>
+          <input type="email" id="inp-email" placeholder="email@example.com">
+        </div>
+        <div class="col-sm-6 d-flex align-items-end">
+          <button class="btn-red w-100" onclick="addMember()">+ daftarkan member</button>
         </div>
       </div>
+    </div>
 
-      <!-- BREAKDOWN per bahan -->
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Detail per bahan</div>
-        <table class="breakdown-table" id="detailTable"></table>
+    <div class="section-title">daftar member</div>
+    <div class="table-wrap">
+      <div class="search-bar">
+        <input type="text" id="search-member" placeholder="cari nama atau nomor telepon..." oninput="renderMemberTable()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>member</th>
+              <th>bergabung</th>
+              <th>trx</th>
+              <th>total belanja</th>
+              <th>point diperoleh</th>
+              <th>point ditukar</th>
+              <th>sisa point</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="member-tbody"></tbody>
+        </table>
+      </div>
+      <div id="member-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">👥</div>
+        <p>belum ada member terdaftar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TRANSAKSI ══════════ -->
+  <div class="tab-panel" id="tab-transaksi">
+    <div class="section-title">input transaksi</div>
+    <div class="form-card">
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label>cari member *</label>
+          <div class="autocomplete-wrap" id="trx-ac-wrap">
+            <input type="text" id="trx-search" placeholder="ketik nama atau no. HP..." autocomplete="off"
+              oninput="acSearch('trx')" onfocus="acSearch('trx')">
+            <div class="autocomplete-dropdown" id="trx-ac-drop"></div>
+          </div>
+          <div id="trx-selected" style="display:none"></div>
+        </div>
+        <div class="col-sm-6">
+          <label>nominal transaksi (Rp) *</label>
+          <input type="number" id="inp-amount" placeholder="contoh: 57000" min="0" oninput="previewPoint()">
+        </div>
+        <div class="col-12" id="trx-preview-wrap" style="display:none">
+          <div class="point-preview">
+            <div>
+              <div class="label">point yang akan diterima</div>
+              <div class="sublabel">setiap Rp 30.000 = 1 point</div>
+            </div>
+            <div class="val" id="preview-val">0 pt</div>
+          </div>
+        </div>
+        <div class="col-sm-6 d-flex align-items-end">
+          <button class="btn-red w-100" onclick="addTransaksi()">catat transaksi</button>
+        </div>
       </div>
     </div>
 
-    <!-- SARAN HARGA JUAL -->
-    <div class="card">
-      <div class="card-title">Saran harga jual</div>
-      <div class="tiers-grid" id="tiersGrid"></div>
+    <div class="section-title">riwayat transaksi</div>
+    <div class="table-wrap">
+      <div id="trx-list">
+        <div class="empty-state"><div class="empty-icon">🧾</div><p>belum ada transaksi</p></div>
+      </div>
+    </div>
+  </div>
 
-      <!-- KALKULASI AKHIR -->
-      <div style="border-top:1px solid var(--border);padding-top:14px">
-        <table class="breakdown-table" id="finalTable"></table>
+  <!-- ══════════ TUKAR POINT ══════════ -->
+  <div class="tab-panel" id="tab-tukarpoint">
+    <div class="section-title">tukar point member</div>
+    <div class="form-card">
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label>cari member *</label>
+          <div class="autocomplete-wrap" id="rdm-ac-wrap">
+            <input type="text" id="rdm-search" placeholder="ketik nama atau no. HP..." autocomplete="off"
+              oninput="acSearch('rdm')" onfocus="acSearch('rdm')">
+            <div class="autocomplete-dropdown" id="rdm-ac-drop"></div>
+          </div>
+          <div id="rdm-selected" style="display:none"></div>
+        </div>
+        <div class="col-sm-6">
+          <label>jumlah point yang ditukar *</label>
+          <input type="number" id="inp-redeem" placeholder="contoh: 3" min="1" oninput="previewRedeem()">
+        </div>
+        <div class="col-12" id="rdm-info-wrap" style="display:none">
+          <div class="redeem-info">
+            <div class="ri-row">
+              <span class="ri-label">sisa point saat ini</span>
+              <span class="ri-val" id="rdm-current">0 pt</span>
+            </div>
+            <div class="ri-row">
+              <span class="ri-label">point yang ditukar</span>
+              <span class="ri-val" id="rdm-use">0 pt</span>
+            </div>
+            <div class="ri-row">
+              <span class="ri-label">sisa point setelah tukar</span>
+              <span class="ri-val ri-remain" id="rdm-after">0 pt</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 d-flex align-items-end">
+          <button class="btn-red w-100" onclick="doRedeem()">tukarkan point</button>
+        </div>
       </div>
     </div>
 
-  </div>
-
-  <!-- EMPTY STATE -->
-  <div id="emptyState" class="card">
-    <div class="empty">
-      <div class="empty-icon">☕</div>
-      <p>Isi nama bahan, jumlah, dan harga di atas<br>untuk melihat kalkulasi HPP.</p>
+    <div class="section-title">riwayat penukaran point</div>
+    <div class="table-wrap">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>member</th>
+              <th>waktu tukar</th>
+              <th>point ditukar</th>
+              <th>sisa point</th>
+            </tr>
+          </thead>
+          <tbody id="redeem-tbody"></tbody>
+        </table>
+      </div>
+      <div id="redeem-empty" class="empty-state">
+        <div class="empty-icon">🎁</div>
+        <p>belum ada penukaran point</p>
+      </div>
     </div>
   </div>
 
+</div><!-- end main-wrap -->
+
+<!-- MODAL TRX dari tabel member -->
+<div class="modal-overlay" id="modal-trx">
+  <div class="modal-box">
+    <div class="modal-title">tambah transaksi</div>
+    <div class="modal-subtitle" id="modal-trx-sub">—</div>
+
+    <label style="font-size:0.78rem;font-weight:600;color:#555;display:block;margin-bottom:0.3rem">nominal transaksi (Rp) *</label>
+    <input type="number" id="modal-amount" placeholder="contoh: 68000" min="0"
+      oninput="previewModalPoint()"
+      style="width:100%;border:1px solid #e5e5e5;border-radius:8px;padding:0.6rem 0.9rem;font-size:0.875rem;outline:none;font-family:inherit">
+    <div id="modal-preview" style="display:none;margin-top:0.8rem" class="point-preview">
+      <div>
+        <div class="label">point yang akan diterima</div>
+        <div class="sublabel">setiap Rp 30.000 = 1 point</div>
+      </div>
+      <div class="val" id="modal-preview-val">0 pt</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-trx')">batal</button>
+      <button class="btn-red" onclick="submitModalTrx()">simpan transaksi</button>
+    </div>
+  </div>
 </div>
 
+<!-- MODAL REDEEM dari tabel member -->
+<div class="modal-overlay" id="modal-redeem">
+  <div class="modal-box">
+    <div class="modal-title">tukar point</div>
+    <div class="modal-subtitle" id="modal-rdm-sub">—</div>
+
+    <label style="font-size:0.78rem;font-weight:600;color:#555;display:block;margin-bottom:0.3rem">jumlah point yang ditukar *</label>
+    <input type="number" id="modal-redeem-amt" placeholder="contoh: 3" min="1"
+      oninput="previewModalRedeem()"
+      style="width:100%;border:1px solid #e5e5e5;border-radius:8px;padding:0.6rem 0.9rem;font-size:0.875rem;outline:none;font-family:inherit">
+
+    <div id="modal-rdm-info" style="display:none;margin-top:0.85rem" class="redeem-info">
+      <div class="ri-row">
+        <span class="ri-label">sisa point saat ini</span>
+        <span class="ri-val" id="modal-rdm-current">0 pt</span>
+      </div>
+      <div class="ri-row">
+        <span class="ri-label">point yang ditukar</span>
+        <span class="ri-val" id="modal-rdm-use">0 pt</span>
+      </div>
+      <div class="ri-row">
+        <span class="ri-label">sisa point setelah tukar</span>
+        <span class="ri-val ri-remain" id="modal-rdm-after">0 pt</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-redeem')">batal</button>
+      <button class="btn-red" onclick="submitModalRedeem()">tukarkan point</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
 <script>
-  let rows = [];
-  let selectedTier = 1;
+const POINT_PER = 30000;
+let members = JSON.parse(localStorage.getItem('voold_members') || '[]');
+let transactions = JSON.parse(localStorage.getItem('voold_trx') || '[]');
+let redeemLogs = JSON.parse(localStorage.getItem('voold_redeem') || '[]');
+let modalTargetId = null;
+let trxSelectedId = null;
+let rdmSelectedId = null;
 
-  function fmt(n) {
-    return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+function save() {
+  localStorage.setItem('voold_members', JSON.stringify(members));
+  localStorage.setItem('voold_trx', JSON.stringify(transactions));
+  localStorage.setItem('voold_redeem', JSON.stringify(redeemLogs));
+}
+
+function toast(msg, type = 'success') {
+  const w = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast-msg ' + type;
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+
+function initials(name) {
+  return name.trim().split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+function fmtRp(n) { return 'Rp ' + parseInt(n).toLocaleString('id-ID'); }
+function calcPoint(amount) { return Math.floor(amount / POINT_PER); }
+function getMember(id) { return members.find(m => m.id === id); }
+
+// ── TAB SWITCH ──────────────────────────────────────
+document.querySelectorAll('.nav-links button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+    if (tab === 'dashboard') renderDashboard();
+    if (tab === 'member') renderMemberTable();
+    if (tab === 'transaksi') { clearAc('trx'); renderTrxList(); }
+    if (tab === 'tukarpoint') { clearAc('rdm'); renderRedeemTable(); }
+  });
+});
+
+// ── AUTOCOMPLETE ─────────────────────────────────────
+function acSearch(prefix) {
+  const inputId = prefix === 'trx' ? 'trx-search' : 'rdm-search';
+  const dropId  = prefix === 'trx' ? 'trx-ac-drop' : 'rdm-ac-drop';
+  const q = document.getElementById(inputId).value.toLowerCase();
+  const drop = document.getElementById(dropId);
+  const results = members.filter(m =>
+    m.name.toLowerCase().includes(q) || m.phone.includes(q)
+  ).slice(0, 8);
+
+  if (results.length === 0) { drop.innerHTML = '<div class="ac-item" style="color:#999;cursor:default;font-size:0.82rem">tidak ditemukan</div>'; drop.classList.add('show'); return; }
+  drop.innerHTML = results.map(m => `
+    <div class="ac-item" onclick="selectMember('${prefix}','${m.id}')">
+      <div class="ac-avatar">${initials(m.name)}</div>
+      <div class="ac-info">
+        <div class="ac-name">${m.name}</div>
+        <div class="ac-sub">${m.phone}</div>
+      </div>
+      <div class="ac-badge">★ ${m.points} pt</div>
+    </div>
+  `).join('');
+  drop.classList.add('show');
+}
+
+function selectMember(prefix, id) {
+  const m = getMember(id);
+  if (!m) return;
+  const dropId    = prefix === 'trx' ? 'trx-ac-drop' : 'rdm-ac-drop';
+  const inputId   = prefix === 'trx' ? 'trx-search'  : 'rdm-search';
+  const selDivId  = prefix === 'trx' ? 'trx-selected' : 'rdm-selected';
+  document.getElementById(dropId).classList.remove('show');
+  document.getElementById(inputId).style.display = 'none';
+  document.getElementById(selDivId).style.display = 'block';
+  document.getElementById(selDivId).innerHTML = `
+    <div class="selected-member-card">
+      <div>
+        <div class="sm-name">${m.name}</div>
+        <div class="sm-pt">${m.phone} &nbsp;·&nbsp; ★ ${m.points} sisa point</div>
+      </div>
+      <button class="sm-clear" onclick="clearAc('${prefix}')" title="ganti member">✕</button>
+    </div>
+  `;
+  if (prefix === 'trx') { trxSelectedId = id; previewPoint(); }
+  if (prefix === 'rdm') {
+    rdmSelectedId = id;
+    document.getElementById('inp-redeem').value = '';
+    document.getElementById('rdm-info-wrap').style.display = 'none';
+    document.getElementById('rdm-current').textContent = m.points + ' pt';
   }
+}
 
-  function syncSlider() {
-    document.getElementById('ohVal').textContent = document.getElementById('ohSlider').value;
+function clearAc(prefix) {
+  const inputId  = prefix === 'trx' ? 'trx-search'  : 'rdm-search';
+  const selDivId = prefix === 'trx' ? 'trx-selected' : 'rdm-selected';
+  const dropId   = prefix === 'trx' ? 'trx-ac-drop'  : 'rdm-ac-drop';
+  document.getElementById(inputId).style.display = 'block';
+  document.getElementById(inputId).value = '';
+  document.getElementById(selDivId).style.display = 'none';
+  document.getElementById(dropId).classList.remove('show');
+  if (prefix === 'trx') { trxSelectedId = null; document.getElementById('trx-preview-wrap').style.display = 'none'; }
+  if (prefix === 'rdm') { rdmSelectedId = null; document.getElementById('rdm-info-wrap').style.display = 'none'; }
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#trx-ac-wrap') && !e.target.closest('#trx-selected'))
+    document.getElementById('trx-ac-drop').classList.remove('show');
+  if (!e.target.closest('#rdm-ac-wrap') && !e.target.closest('#rdm-selected'))
+    document.getElementById('rdm-ac-drop').classList.remove('show');
+});
+
+// ── MEMBER CRUD ─────────────────────────────────────
+function addMember() {
+  const name  = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  if (!name)  { toast('nama tidak boleh kosong', 'error'); return; }
+  if (!phone) { toast('nomor telepon wajib diisi', 'error'); return; }
+  if (members.find(m => m.phone === phone)) { toast('nomor telepon sudah terdaftar', 'error'); return; }
+  const id = Date.now().toString();
+  members.push({ id, name, phone, email, points: 0, pointsEarned: 0, pointsRedeemed: 0, totalAmount: 0, trxCount: 0, joinDate: new Date().toLocaleDateString('id-ID') });
+  save();
+  ['inp-name','inp-phone','inp-email'].forEach(i => document.getElementById(i).value = '');
+  toast(name + ' berhasil didaftarkan!');
+  renderMemberTable();
+  updateStats();
+}
+
+function renderMemberTable() {
+  const q = (document.getElementById('search-member').value || '').toLowerCase();
+  const filtered = members.filter(m => m.name.toLowerCase().includes(q) || m.phone.includes(q));
+  const tbody = document.getElementById('member-tbody');
+  const empty = document.getElementById('member-empty');
+  if (filtered.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = filtered.map(m => `
+    <tr>
+      <td>
+        <div class="member-name-cell">
+          <div class="member-avatar">${initials(m.name)}</div>
+          <div><div class="member-name">${m.name}</div><div class="member-phone">${m.phone}</div></div>
+        </div>
+      </td>
+      <td style="color:#999;font-size:0.8rem">${m.joinDate}</td>
+      <td>${m.trxCount}x</td>
+      <td>${fmtRp(m.totalAmount)}</td>
+      <td><span class="badge-point">★ ${m.pointsEarned || m.points}</span></td>
+      <td><span class="badge-redeemed">↩ ${m.pointsRedeemed || 0}</span></td>
+      <td><span class="badge-remain">✓ ${m.points}</span></td>
+      <td style="white-space:nowrap">
+        <button class="action-btn" onclick="openTrxModal('${m.id}')">+ trx</button>
+        <button class="action-btn" onclick="openRedeemModal('${m.id}')">tukar</button>
+        <button class="action-btn danger" onclick="deleteMember('${m.id}')">hapus</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function deleteMember(id) {
+  if (!confirm('Hapus member ini? Semua data transaksi dan point-nya akan ikut terhapus.')) return;
+  members = members.filter(m => m.id !== id);
+  transactions = transactions.filter(t => t.memberId !== id);
+  redeemLogs = redeemLogs.filter(r => r.memberId !== id);
+  save();
+  toast('Member dihapus');
+  renderMemberTable();
+  updateStats();
+}
+
+// ── TRANSAKSI ────────────────────────────────────────
+function previewPoint() {
+  const val = parseInt(document.getElementById('inp-amount').value) || 0;
+  const wrap = document.getElementById('trx-preview-wrap');
+  if (val > 0 && trxSelectedId) {
+    wrap.style.display = 'block';
+    document.getElementById('preview-val').textContent = calcPoint(val) + ' pt';
+  } else { wrap.style.display = 'none'; }
+}
+
+function addTransaksi() {
+  if (!trxSelectedId) { toast('pilih member terlebih dahulu', 'error'); return; }
+  const amount = parseInt(document.getElementById('inp-amount').value);
+  if (!amount || amount <= 0) { toast('nominal transaksi tidak valid', 'error'); return; }
+  processTransaction(trxSelectedId, amount);
+  document.getElementById('inp-amount').value = '';
+  document.getElementById('trx-preview-wrap').style.display = 'none';
+  clearAc('trx');
+  renderTrxList();
+}
+
+function processTransaction(memberId, amount) {
+  const pt = calcPoint(amount);
+  const member = getMember(memberId);
+  if (!member) return;
+  member.points += pt;
+  member.pointsEarned = (member.pointsEarned || 0) + pt;
+  member.totalAmount += amount;
+  member.trxCount += 1;
+  const now = new Date();
+  transactions.unshift({ id: Date.now().toString(), memberId, memberName: member.name, amount, points: pt, time: now.toLocaleString('id-ID'), type: 'earn' });
+  save();
+  toast('+' + pt + ' point untuk ' + member.name + '!');
+  renderDashboard();
+  renderMemberTable();
+}
+
+function renderTrxList() {
+  const list = document.getElementById('trx-list');
+  if (transactions.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🧾</div><p>belum ada transaksi</p></div>'; return;
   }
+  list.innerHTML = transactions.map(t => `
+    <div class="trans-item">
+      <div class="trans-left">
+        <div class="trans-name">${t.memberName}</div>
+        <div class="trans-time">${t.time}</div>
+      </div>
+      <div class="trans-right">
+        <div class="trans-amount">${fmtRp(t.amount)}</div>
+        <div class="trans-point earn">+${t.points} point</div>
+      </div>
+    </div>
+  `).join('');
+}
 
-  function unitLabel(unit) {
-    const map = { gram:'g', ml:'ml', buah:'bh', sdm:'sdm', sachet:'scht' };
-    return map[unit] || unit;
+// ── REDEEM ──────────────────────────────────────────
+function previewRedeem() {
+  if (!rdmSelectedId) return;
+  const m = getMember(rdmSelectedId);
+  const use = parseInt(document.getElementById('inp-redeem').value) || 0;
+  const wrap = document.getElementById('rdm-info-wrap');
+  if (use > 0) {
+    wrap.style.display = 'block';
+    document.getElementById('rdm-current').textContent = m.points + ' pt';
+    document.getElementById('rdm-use').textContent = use + ' pt';
+    const after = m.points - use;
+    document.getElementById('rdm-after').textContent = (after >= 0 ? after : '⚠ tidak cukup') + (after >= 0 ? ' pt' : '');
+    document.getElementById('rdm-after').style.color = after >= 0 ? '#2e7d32' : '#c00';
+  } else { wrap.style.display = 'none'; }
+}
+
+function doRedeem() {
+  if (!rdmSelectedId) { toast('pilih member terlebih dahulu', 'error'); return; }
+  const m = getMember(rdmSelectedId);
+  const use = parseInt(document.getElementById('inp-redeem').value);
+  if (!use || use <= 0) { toast('masukkan jumlah point yang ditukar', 'error'); return; }
+  if (use > m.points) { toast('point tidak mencukupi! sisa ' + m.points + ' pt', 'error'); return; }
+  m.points -= use;
+  m.pointsRedeemed = (m.pointsRedeemed || 0) + use;
+  const now = new Date();
+  redeemLogs.unshift({ id: Date.now().toString(), memberId: m.id, memberName: m.name, pointsUsed: use, pointsAfter: m.points, time: now.toLocaleString('id-ID') });
+  save();
+  toast(use + ' point berhasil ditukar untuk ' + m.name + '!');
+  renderDashboard();
+  renderMemberTable();
+  renderRedeemTable();
+  document.getElementById('inp-redeem').value = '';
+  document.getElementById('rdm-info-wrap').style.display = 'none';
+  clearAc('rdm');
+}
+
+function renderRedeemTable() {
+  const tbody = document.getElementById('redeem-tbody');
+  const empty = document.getElementById('redeem-empty');
+  if (redeemLogs.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = redeemLogs.map(r => `
+    <tr>
+      <td>
+        <div class="member-name-cell">
+          <div class="member-avatar">${initials(r.memberName)}</div>
+          <div class="member-name">${r.memberName}</div>
+        </div>
+      </td>
+      <td style="color:#999;font-size:0.8rem">${r.time}</td>
+      <td><span class="badge-redeemed">↩ ${r.pointsUsed} pt</span></td>
+      <td><span class="badge-remain">✓ ${r.pointsAfter} pt</span></td>
+    </tr>
+  `).join('');
+}
+
+// ── MODAL TRX ───────────────────────────────────────
+function openTrxModal(id) {
+  modalTargetId = id;
+  const m = getMember(id);
+  document.getElementById('modal-trx-sub').textContent = m.name + ' · ★ ' + m.points + ' sisa point';
+  document.getElementById('modal-amount').value = '';
+  document.getElementById('modal-preview').style.display = 'none';
+  document.getElementById('modal-trx').classList.add('open');
+}
+
+function previewModalPoint() {
+  const val = parseInt(document.getElementById('modal-amount').value) || 0;
+  const prev = document.getElementById('modal-preview');
+  if (val > 0) {
+    prev.style.display = 'flex';
+    document.getElementById('modal-preview-val').textContent = calcPoint(val) + ' pt';
+  } else { prev.style.display = 'none'; }
+}
+
+function submitModalTrx() {
+  const amount = parseInt(document.getElementById('modal-amount').value);
+  if (!amount || amount <= 0) { toast('nominal tidak valid', 'error'); return; }
+  processTransaction(modalTargetId, amount);
+  closeModal('modal-trx');
+  renderMemberTable();
+}
+
+// ── MODAL REDEEM ─────────────────────────────────────
+function openRedeemModal(id) {
+  modalTargetId = id;
+  const m = getMember(id);
+  document.getElementById('modal-rdm-sub').textContent = m.name + ' · ★ ' + m.points + ' sisa point';
+  document.getElementById('modal-redeem-amt').value = '';
+  document.getElementById('modal-rdm-info').style.display = 'none';
+  document.getElementById('modal-rdm-current').textContent = m.points + ' pt';
+  document.getElementById('modal-trx').classList.remove('open');
+  document.getElementById('modal-redeem').classList.add('open');
+}
+
+function previewModalRedeem() {
+  const m = getMember(modalTargetId);
+  const use = parseInt(document.getElementById('modal-redeem-amt').value) || 0;
+  const info = document.getElementById('modal-rdm-info');
+  if (use > 0) {
+    info.style.display = 'block';
+    document.getElementById('modal-rdm-current').textContent = m.points + ' pt';
+    document.getElementById('modal-rdm-use').textContent = use + ' pt';
+    const after = m.points - use;
+    document.getElementById('modal-rdm-after').textContent = (after >= 0 ? after + ' pt' : '⚠ tidak cukup');
+    document.getElementById('modal-rdm-after').style.color = after >= 0 ? '#2e7d32' : '#c00';
+  } else { info.style.display = 'none'; }
+}
+
+function submitModalRedeem() {
+  const m = getMember(modalTargetId);
+  const use = parseInt(document.getElementById('modal-redeem-amt').value);
+  if (!use || use <= 0) { toast('masukkan jumlah point', 'error'); return; }
+  if (use > m.points) { toast('point tidak mencukupi! sisa ' + m.points + ' pt', 'error'); return; }
+  m.points -= use;
+  m.pointsRedeemed = (m.pointsRedeemed || 0) + use;
+  const now = new Date();
+  redeemLogs.unshift({ id: Date.now().toString(), memberId: m.id, memberName: m.name, pointsUsed: use, pointsAfter: m.points, time: now.toLocaleString('id-ID') });
+  save();
+  toast(use + ' point berhasil ditukar untuk ' + m.name + '!');
+  renderDashboard();
+  renderMemberTable();
+  renderRedeemTable();
+  closeModal('modal-redeem');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  modalTargetId = null;
+}
+document.getElementById('modal-trx').addEventListener('click', function(e) { if (e.target === this) closeModal('modal-trx'); });
+document.getElementById('modal-redeem').addEventListener('click', function(e) { if (e.target === this) closeModal('modal-redeem'); });
+
+// ── DASHBOARD ────────────────────────────────────────
+function renderDashboard() {
+  updateStats();
+  const list = document.getElementById('recent-list');
+  const combined = [
+    ...transactions.map(t => ({ ...t, _type: 'earn' })),
+    ...redeemLogs.map(r => ({ ...r, _type: 'redeem', points: r.pointsUsed }))
+  ].sort((a, b) => b.id - a.id).slice(0, 12);
+
+  if (combined.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">☕</div><p>belum ada aktivitas</p></div>'; return;
   }
+  list.innerHTML = combined.map(item => {
+    if (item._type === 'earn') return `
+      <div class="trans-item">
+        <div class="trans-left">
+          <div class="trans-name">${item.memberName} <span class="trans-tag earn-tag">transaksi</span></div>
+          <div class="trans-time">${item.time}</div>
+        </div>
+        <div class="trans-right">
+          <div class="trans-amount">${fmtRp(item.amount)}</div>
+          <div class="trans-point earn">+${item.points} point</div>
+        </div>
+      </div>`;
+    else return `
+      <div class="trans-item">
+        <div class="trans-left">
+          <div class="trans-name">${item.memberName} <span class="trans-tag redeem-tag">tukar point</span></div>
+          <div class="trans-time">${item.time}</div>
+        </div>
+        <div class="trans-right">
+          <div class="trans-amount" style="color:#e65100">−${item.pointsUsed} pt</div>
+          <div class="trans-point redeem">sisa ${item.pointsAfter} pt</div>
+        </div>
+      </div>`;
+  }).join('');
+}
 
-  function calcCost(r) {
-    const qty = parseFloat(r.qty) || 0;
-    const price = parseFloat(r.price) || 0;
-    const unit = r.unit;
-    if (unit === 'gram') return (qty / 1000) * price;
-    if (unit === 'ml') return (qty / 1000) * price;
-    if (unit === 'buah') return qty * price;
-    if (unit === 'sdm') return (qty * 15 / 1000) * price;
-    if (unit === 'sachet') return qty * price;
-    return 0;
-  }
+function updateStats() {
+  document.getElementById('stat-total').textContent = members.length;
+  document.getElementById('stat-trx').textContent = transactions.length;
+  const totalEarned = members.reduce((s, m) => s + (m.pointsEarned || 0), 0);
+  const totalRedeemed = members.reduce((s, m) => s + (m.pointsRedeemed || 0), 0);
+  document.getElementById('stat-points-given').textContent = totalEarned;
+  document.getElementById('stat-points-redeemed').textContent = totalRedeemed;
+}
 
-  function addRow(name='', qty='', unit='gram', price='') {
-    const id = Date.now() + Math.random();
-    rows.push({ id, name, qty, unit, price });
-    renderRows();
-  }
+// ── MIGRATE old data (no pointsEarned field) ─────────
+members.forEach(m => {
+  if (m.pointsEarned === undefined) m.pointsEarned = m.points + (m.pointsRedeemed || 0);
+  if (m.pointsRedeemed === undefined) m.pointsRedeemed = 0;
+});
+save();
 
-  function delRow(id) {
-    rows = rows.filter(r => r.id !== id);
-    renderRows();
-    recalc();
-  }
-
-  function updateRow(id, field, val) {
-    const r = rows.find(x => x.id === id);
-    if (r) { r[field] = val; recalc(); }
-  }
-
-  function renderRows() {
-    const el = document.getElementById('ingList');
-    el.innerHTML = '';
-    rows.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'ing-row';
-      div.innerHTML = `
-        <input type="text" placeholder="misal: Espresso, Susu, Gula..." value="${r.name}"
-          oninput="updateRow(${r.id},'name',this.value)">
-        <input type="number" placeholder="50" value="${r.qty}" min="0" step="0.1"
-          oninput="updateRow(${r.id},'qty',this.value)">
-        <select onchange="updateRow(${r.id},'unit',this.value)">
-          <option value="gram" ${r.unit==='gram'?'selected':''}>gram</option>
-          <option value="ml" ${r.unit==='ml'?'selected':''}>ml</option>
-          <option value="buah" ${r.unit==='buah'?'selected':''}>buah</option>
-          <option value="sdm" ${r.unit==='sdm'?'selected':''}>sdm</option>
-          <option value="sachet" ${r.unit==='sachet'?'selected':''}>sachet</option>
-        </select>
-        <input type="number" placeholder="Harga per kg / L / buah" value="${r.price}" min="0"
-          oninput="updateRow(${r.id},'price',this.value)">
-        <button class="del-btn" onclick="delRow(${r.id})" title="Hapus bahan">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
-          </svg>
-        </button>
-      `;
-      el.appendChild(div);
-    });
-    recalc();
-  }
-
-  function recalc() {
-    const hasData = rows.some(r => r.name && parseFloat(r.qty) > 0 && parseFloat(r.price) > 0);
-    document.getElementById('resultSection').classList.toggle('hidden', !hasData);
-    document.getElementById('emptyState').classList.toggle('hidden', hasData);
-    if (!hasData) return;
-
-    const bahan = rows.reduce((s, r) => s + calcCost(r), 0);
-    const ohPct = (parseInt(document.getElementById('ohSlider').value) || 20) / 100;
-    const overhead = bahan * ohPct;
-    const hpp = bahan + overhead;
-
-    document.getElementById('mBahan').textContent = fmt(bahan);
-    document.getElementById('mOverhead').textContent = fmt(overhead);
-    document.getElementById('mOhNote').textContent = `+${Math.round(ohPct*100)}% dari bahan`;
-    document.getElementById('mFinal').textContent = fmt(hpp);
-
-    // Detail per bahan
-    const dt = document.getElementById('detailTable');
-    dt.innerHTML = rows.filter(r => r.name && parseFloat(r.qty) > 0 && parseFloat(r.price) > 0).map(r => {
-      const cost = calcCost(r);
-      const pct = bahan > 0 ? Math.round(cost / bahan * 100) : 0;
-      return `<tr>
-        <td class="td-label">${r.name || '—'}</td>
-        <td style="color:var(--text3);font-size:12px">${r.qty} ${unitLabel(r.unit)}</td>
-        <td>${fmt(cost)} <span style="color:var(--text3);font-size:11px;font-weight:400">(${pct}%)</span></td>
-      </tr>`;
-    }).join('') + `<tr class="tr-total"><td class="td-label" colspan="2">Total bahan</td><td>${fmt(bahan)}</td></tr>`;
-
-    // Tiers
-    const tiers = [
-      { label: 'Hemat', mult: 1.5, desc: '1.5× HPP' },
-      { label: 'Standar', mult: 2.0, desc: '2× HPP — paling umum' },
-      { label: 'Premium', mult: 2.5, desc: '2.5× HPP' },
-    ];
-    const tg = document.getElementById('tiersGrid');
-    tg.innerHTML = '';
-    tiers.forEach((t, i) => {
-      const price = Math.ceil(hpp * t.mult / 1000) * 1000;
-      const margin = Math.round((price - hpp) / price * 100);
-      const bc = margin >= 50 ? 'badge-green' : margin >= 33 ? 'badge-amber' : 'badge-red';
-      const div = document.createElement('div');
-      div.className = 'tier-card' + (selectedTier === i ? ' active' : '');
-      div.innerHTML = `
-        <div class="tier-type">${t.label}</div>
-        <div class="tier-price">${fmt(price)}</div>
-        <div><span class="tier-badge ${bc}">Margin ${margin}%</span></div>
-        <div class="tier-mult">${t.desc}</div>
-      `;
-      div.onclick = () => { selectedTier = i; recalc(); };
-      tg.appendChild(div);
-    });
-
-    // Final breakdown
-    const chosen = Math.ceil(hpp * tiers[selectedTier].mult / 1000) * 1000;
-    const profit = chosen - hpp;
-    const marginPct = Math.round(profit / chosen * 100);
-    const mc = marginPct >= 50 ? 'var(--green)' : marginPct >= 33 ? 'var(--amber)' : 'var(--red)';
-    const marginLabel = marginPct >= 50 ? '✓ Margin sehat' : marginPct >= 33 ? '⚠ Margin cukup' : '✗ Perlu review';
-
-    document.getElementById('finalTable').innerHTML = `
-      <tr><td class="td-label">HPP final (bahan + overhead)</td><td>${fmt(hpp)}</td></tr>
-      <tr><td class="td-label">Harga jual dipilih</td><td style="font-size:16px">${fmt(chosen)}</td></tr>
-      <tr class="tr-profit"><td class="td-label" style="color:var(--green)">Keuntungan per porsi</td><td style="color:var(--green)">${fmt(profit)}</td></tr>
-      <tr><td class="td-label">Margin keuntungan</td><td style="color:${mc}">${marginPct}% — ${marginLabel}</td></tr>
-    `;
-  }
-
-  // Default example data
-  addRow('Espresso', '18', 'gram', '80000');
-  addRow('Susu full cream', '150', 'ml', '22000');
-  addRow('Gula pasir', '15', 'gram', '16000');
-  recalc();
+// INIT
+renderDashboard();
+renderMemberTable();
 </script>
 </body>
 </html>
